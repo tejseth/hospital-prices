@@ -330,3 +330,17 @@ binded <- do.call("rbind", list(beaumont_dearborn, beaumont_farmington_hills, be
                                 select_specialty_hospital_northwest_detroit, select_specialty_hospital_saginaw,
                                 select_specialty_hospital_wyandotte, select_specialty_hospital_wyandotte,
                                 select_specialty_macomb, select_specialty_pontiac))
+
+binded_clean <- binded |> 
+  dplyr::select(-CPT_CODE) |> 
+  filter(!is.na(CHARGE_CODE), CHARGE_CODE != 'N/A') |> 
+  filter(!is.na(CHARGE_DESCRIPTION), CHARGE_DESCRIPTION != 'N/A') |> 
+  filter(!is.na(CHARGE), CHARGE != 'N/A', CHARGE != '-') |> 
+  ungroup() |> 
+  mutate(row_num = row_number())
+
+binded_clean$CHARGE <- parse_number(binded_clean$CHARGE)
+
+write_csv(binded_clean, "binded_clean.csv")
+
+  
